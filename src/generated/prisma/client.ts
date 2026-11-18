@@ -31,8 +31,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Usuarios
+ * const usuarios = await prisma.usuario.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,4 +41,43 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-
+/**
+ * Model Usuario
+ * 
+ */
+export type Usuario = Prisma.UsuarioModel
+/**
+ * Model PersonaDesaparecida
+ * 
+ */
+export type PersonaDesaparecida = Prisma.PersonaDesaparecidaModel
+/**
+ * Model Denunciante
+ * 
+ */
+export type Denunciante = Prisma.DenuncianteModel
+/**
+ * Model EstadoSolicitud
+ * 
+ */
+export type EstadoSolicitud = Prisma.EstadoSolicitudModel
+/**
+ * Model SolicitudBusqueda
+ * 
+ */
+export type SolicitudBusqueda = Prisma.SolicitudBusquedaModel
+/**
+ * Model TipoAlerta
+ * 
+ */
+export type TipoAlerta = Prisma.TipoAlertaModel
+/**
+ * Model Suscripcion
+ * 
+ */
+export type Suscripcion = Prisma.SuscripcionModel
+/**
+ * Model SuscripcionTipoAlerta
+ * 
+ */
+export type SuscripcionTipoAlerta = Prisma.SuscripcionTipoAlertaModel

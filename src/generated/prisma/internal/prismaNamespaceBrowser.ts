@@ -51,7 +51,14 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  Usuario: 'Usuario',
+  PersonaDesaparecida: 'PersonaDesaparecida',
+  Denunciante: 'Denunciante',
+  EstadoSolicitud: 'EstadoSolicitud',
+  SolicitudBusqueda: 'SolicitudBusqueda',
+  TipoAlerta: 'TipoAlerta',
+  Suscripcion: 'Suscripcion',
+  SuscripcionTipoAlerta: 'SuscripcionTipoAlerta'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +75,114 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const UsuarioScalarFieldEnum = {
+  idUsuario: 'idUsuario',
+  nombre: 'nombre',
+  apellido: 'apellido',
+  correo: 'correo',
+  fechaRegistro: 'fechaRegistro'
+} as const
+
+export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeof UsuarioScalarFieldEnum]
+
+
+export const PersonaDesaparecidaScalarFieldEnum = {
+  idPersona: 'idPersona',
+  nombre: 'nombre',
+  apellido: 'apellido',
+  edad: 'edad',
+  provincia: 'provincia',
+  fechaDesaparicion: 'fechaDesaparicion',
+  lugarUltimaVez: 'lugarUltimaVez',
+  descripcionFisica: 'descripcionFisica',
+  informacionAdicional: 'informacionAdicional',
+  fotoUrl: 'fotoUrl',
+  estadoBusqueda: 'estadoBusqueda'
+} as const
+
+export type PersonaDesaparecidaScalarFieldEnum = (typeof PersonaDesaparecidaScalarFieldEnum)[keyof typeof PersonaDesaparecidaScalarFieldEnum]
+
+
+export const DenuncianteScalarFieldEnum = {
+  idDenunciante: 'idDenunciante',
+  nombreCompleto: 'nombreCompleto',
+  dni: 'dni',
+  telefono: 'telefono'
+} as const
+
+export type DenuncianteScalarFieldEnum = (typeof DenuncianteScalarFieldEnum)[keyof typeof DenuncianteScalarFieldEnum]
+
+
+export const EstadoSolicitudScalarFieldEnum = {
+  idEstado: 'idEstado',
+  nombre: 'nombre'
+} as const
+
+export type EstadoSolicitudScalarFieldEnum = (typeof EstadoSolicitudScalarFieldEnum)[keyof typeof EstadoSolicitudScalarFieldEnum]
+
+
+export const SolicitudBusquedaScalarFieldEnum = {
+  idSolicitud: 'idSolicitud',
+  idUsuario: 'idUsuario',
+  idPersona: 'idPersona',
+  idDenunciante: 'idDenunciante',
+  idEstado: 'idEstado',
+  fechaSolicitud: 'fechaSolicitud'
+} as const
+
+export type SolicitudBusquedaScalarFieldEnum = (typeof SolicitudBusquedaScalarFieldEnum)[keyof typeof SolicitudBusquedaScalarFieldEnum]
+
+
+export const TipoAlertaScalarFieldEnum = {
+  idTipo: 'idTipo',
+  nombre: 'nombre'
+} as const
+
+export type TipoAlertaScalarFieldEnum = (typeof TipoAlertaScalarFieldEnum)[keyof typeof TipoAlertaScalarFieldEnum]
+
+
+export const SuscripcionScalarFieldEnum = {
+  idSuscripcion: 'idSuscripcion',
+  idUsuario: 'idUsuario',
+  edad: 'edad',
+  telefono: 'telefono',
+  provincia: 'provincia',
+  fechaSuscripcion: 'fechaSuscripcion'
+} as const
+
+export type SuscripcionScalarFieldEnum = (typeof SuscripcionScalarFieldEnum)[keyof typeof SuscripcionScalarFieldEnum]
+
+
+export const SuscripcionTipoAlertaScalarFieldEnum = {
+  idSuscripcion: 'idSuscripcion',
+  idTipo: 'idTipo'
+} as const
+
+export type SuscripcionTipoAlertaScalarFieldEnum = (typeof SuscripcionTipoAlertaScalarFieldEnum)[keyof typeof SuscripcionTipoAlertaScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

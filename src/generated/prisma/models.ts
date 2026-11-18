@@ -8,4 +8,12 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Usuario.js'
+export type * from './models/PersonaDesaparecida.js'
+export type * from './models/Denunciante.js'
+export type * from './models/EstadoSolicitud.js'
+export type * from './models/SolicitudBusqueda.js'
+export type * from './models/TipoAlerta.js'
+export type * from './models/Suscripcion.js'
+export type * from './models/SuscripcionTipoAlerta.js'
 export type * from './commonInputTypes.js'

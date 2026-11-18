@@ -17,4 +17,43 @@ import * as Prisma from './internal/prismaNamespaceBrowser.js'
 export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
-
+/**
+ * Model Usuario
+ * 
+ */
+export type Usuario = Prisma.UsuarioModel
+/**
+ * Model PersonaDesaparecida
+ * 
+ */
+export type PersonaDesaparecida = Prisma.PersonaDesaparecidaModel
+/**
+ * Model Denunciante
+ * 
+ */
+export type Denunciante = Prisma.DenuncianteModel
+/**
+ * Model EstadoSolicitud
+ * 
+ */
+export type EstadoSolicitud = Prisma.EstadoSolicitudModel
+/**
+ * Model SolicitudBusqueda
+ * 
+ */
+export type SolicitudBusqueda = Prisma.SolicitudBusquedaModel
+/**
+ * Model TipoAlerta
+ * 
+ */
+export type TipoAlerta = Prisma.TipoAlertaModel
+/**
+ * Model Suscripcion
+ * 
+ */
+export type Suscripcion = Prisma.SuscripcionModel
+/**
+ * Model SuscripcionTipoAlerta
+ * 
+ */
+export type SuscripcionTipoAlerta = Prisma.SuscripcionTipoAlertaModel
