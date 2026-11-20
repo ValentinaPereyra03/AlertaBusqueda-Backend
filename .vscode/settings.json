@@ -1,0 +1,7 @@
+{
+  "workbench.iconTheme": "material-icon-theme",
+  "files.associations": {
+    "*.prisma": "prisma"
+  },
+  "editor.semanticHighlighting.enabled": true
+}
