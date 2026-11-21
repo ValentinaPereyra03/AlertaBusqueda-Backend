@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto.js';
-import { UpdateAuthDto } from './dto/update-auth.dto.js';
+import {
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { compare } from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { LoginAuthDto } from './dto/login-auth.dto.js';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(dto: LoginAuthDto) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { correo: dto.correo },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (
+      !usuario ||
+      !usuario.passwordHash ||
+      !(await compare(dto.password, usuario.passwordHash))
+    ) {
+      throw new UnauthorizedException(
+        'Correo o contraseña incorrectos.',
+      );
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    const accessToken = await this.jwtService.signAsync({
+      sub: usuario.idUsuario,
+      correo: usuario.correo,
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return {
+      access_token: accessToken,
+      usuario: {
+        idUsuario: usuario.idUsuario,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        correo: usuario.correo,
+      },
+    };
   }
 }

@@ -11,6 +11,7 @@ model Usuario {
   idUsuario     Int                 @id @default(autoincrement()) @map("id_usuario")
   nombre        String              @db.VarChar(100)
   apellido      String              @db.VarChar(100)
+  passwordHash String?              @map("password_hash") @db.VarChar(255)
   correo        String              @unique @db.VarChar(254)
   fechaRegistro DateTime            @default(now()) @map("fecha_registro") @db.Timestamptz(6)
   solicitudes   SolicitudBusqueda[]
