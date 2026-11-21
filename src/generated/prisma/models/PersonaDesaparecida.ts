@@ -508,10 +508,6 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type PersonaDesaparecidaCreateNestedOneWithoutSolicitudInput = {
   create?: Prisma.XOR<Prisma.PersonaDesaparecidaCreateWithoutSolicitudInput, Prisma.PersonaDesaparecidaUncheckedCreateWithoutSolicitudInput>
   connectOrCreate?: Prisma.PersonaDesaparecidaCreateOrConnectWithoutSolicitudInput
