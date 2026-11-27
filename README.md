@@ -1,132 +1,172 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## Alerta Búsqueda — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST del proyecto académico Alerta Búsqueda, orientado al registro de personas desaparecidas, la gestión de solicitudes de búsqueda y la suscripción a alertas. Este repositorio contiene el servidor desarrollado con NestJS y TypeScript, con persistencia en PostgreSQL mediante Prisma ORM.
+ ## Tecnologías
+- Node.js, NestJS y TypeScript: desarrollo de la API REST.
+- PostgreSQL: almacenamiento relacional de la información.
+- Prisma ORM y Prisma Migrate: acceso a los datos, definición del esquema y migraciones.
+- class-validator y class-transformer: validación de datos recibidos mediante DTO.
+- bcrypt: generación y verificación de hashes de contraseñas.
+- @nestjs/jwt: generación de JSON Web Tokens al iniciar sesión.
+- Postman: ejecución y organización de solicitudes HTTP para verificar la API.
+- Git y GitHub: control de versiones y colaboración mediante ramas y Pull Requests.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Arquitectura
+El backend sigue la organización modular de NestJS:
+- Controller: recibe las solicitudes HTTP, obtiene parámetros y cuerpos de las peticiones, y delega al Service.
+- Service: implementa la lógica de negocio y ejecuta operaciones con Prisma.
+- DTO: define y valida los datos de entrada.
+- Module: registra componentes y dependencias de cada funcionalidad.
+- PrismaService: establece el acceso a PostgreSQL mediante Prisma Client.
 
-## Description
+Los módulos se encuentran en src/modules/: app, prisma, users, auth, personas, solicitudes y suscripciones. La aplicación configura ValidationPipe de manera global en src/main.ts y utiliza ParseIntPipe para validar los identificadores numéricos recibidos en las rutas.
+Funcionalidades
+Gestión de usuarios
+El módulo Users implementa el CRUD completo de usuarios: registro, listado, búsqueda por ID, actualización y eliminación. Comprueba la unicidad del correo, guarda las contraseñas como hashes con bcrypt y excluye passwordHash de las respuestas. Antes de eliminar un usuario, comprueba si tiene solicitudes o suscripciones asociadas.
+Autenticación
+El módulo Auth permite iniciar sesión con correo electrónico y contraseña mediante POST /auth/login. Verifica la contraseña utilizando bcrypt y, cuando las credenciales son válidas, devuelve un token JWT y los datos básicos del usuario. El registro se realiza mediante POST /users, evitando dos endpoints de creación.
+Personas desaparecidas
+El módulo Personas permite crear, consultar, modificar y eliminar registros. Gestiona datos de identificación, provincia, fecha y lugar de desaparición, descripción física y otros campos definidos en su DTO y modelo de Prisma.
+Solicitudes de búsqueda
+El módulo Solicitudes relaciona un usuario, una persona desaparecida, un denunciante y un estado. Al crear una solicitud, el Service busca el estado Pendiente, registra o reutiliza al denunciante según su DNI y guarda las claves foráneas. El modelo establece una solicitud como máximo por persona desaparecida.
+Suscripciones a alertas
+El módulo Suscripciones administra suscripciones vinculadas a usuarios. Permite seleccionar preferencias de alerta; estas se representan mediante las tablas tipos_alerta y suscripcion_tipos_alerta. El modelo establece una suscripción como máximo por usuario. El nombre completo se recibe para validación en el DTO, pero no se almacena como columna de suscripciones.
+Base de datos
+La base de datos PostgreSQL se modela de forma relacional y normalizada hasta tercera forma normal (3FN). El esquema se encuentra en prisma/schema.prisma y contiene las siguientes entidades:
+Modelo Prisma	Tabla PostgreSQL	Propósito
+Usuario	usuarios	Cuentas registradas
+PersonaDesaparecida	personas_desaparecidas	Personas registradas para búsqueda
+Denunciante	denunciantes	Datos de los denunciantes
+EstadoSolicitud	estados_solicitud	Estados de las solicitudes
+SolicitudBusqueda	solicitudes_busqueda	Relación entre usuario, persona, denunciante y estado
+Suscripcion	suscripciones	Suscripciones vinculadas a usuarios
+TipoAlerta	tipos_alerta	Tipos de alertas disponibles
+SuscripcionTipoAlerta	suscripcion_tipos_alerta	Relación entre suscripciones y tipos de alerta
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+Las relaciones se definen mediante claves primarias, foráneas y restricciones de unicidad. Los cambios estructurales se gestionan con migraciones de Prisma.
+Endpoints
+Usuarios
+Método	Ruta	Operación
+POST	/users	Registrar usuario
+GET	/users	Listar usuarios
+GET	/users/:id	Buscar usuario por ID
+PATCH	/users/:id	Actualizar usuario
+DELETE	/users/:id	Eliminar usuario
 
-```bash
-$ npm install
-```
 
-## Compile and run the project
+## Autenticación
+Método	Ruta	Operación
+POST	/auth/login	Validar credenciales y generar JWT
 
-```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+## Personas desaparecidas
+Método	Ruta	Operación
+POST	/personas	Registrar persona
+GET	/personas	Listar personas
+GET	/personas/:id	Buscar persona por ID
+PATCH	/personas/:id	Actualizar persona
+DELETE	/personas/:id	Eliminar persona
 
-# production mode
-$ npm run start:prod
-```
 
-## Run tests
+## Solicitudes de búsqueda
+Método	Ruta	Operación
+POST	/solicitudes/usuario/:idUsuario/persona/:idPersona	Registrar solicitud
+GET	/solicitudes	Listar solicitudes
+GET	/solicitudes/:id	Buscar solicitud por ID
+PATCH	/solicitudes/:id	Actualizar datos del denunciante asociado
+DELETE	/solicitudes/:id	Eliminar solicitud
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+## Suscripciones
+Método	Ruta	Operación
+POST	/suscripciones/usuario/:idUsuario	Registrar suscripción
+GET	/suscripciones	Listar suscripciones
+GET	/suscripciones/:id	Buscar suscripción por ID
+PATCH	/suscripciones/:id	Actualizar suscripción y preferencias
+DELETE	/suscripciones/:id	Eliminar suscripción
 
-# test coverage
-$ npm run test:cov
-```
 
-## Deployment
+Instalación y ejecución local
+Requisitos
+Tener instalados Node.js, npm y PostgreSQL, y contar con una base de datos local para el proyecto.
+# Clonar el repositorio
+git clone https://github.com/ValentinaPereyra03/AlertaBusqueda-Backend.git
+cd AlertaBusqueda-Backend
+git switch dev
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# Instalar dependencias
+npm install
+Crear un archivo .env en la raíz del proyecto con valores propios del entorno:
+PORT=3000
+DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/alerta_busqueda_db
+JWT_SECRET=reemplazar_por_una_clave_secreta_larga_y_segura
+API_BASE_URL=http://localhost:3000
+El archivo .env contiene información sensible y no debe subirse a GitHub.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+# Aplicar las migraciones existentes
+npx prisma migrate deploy
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+# Generar Prisma Client
+npx prisma generate
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+# Iniciar el servidor en modo desarrollo
+npm run start:dev
 
-## Observability
+# Comprobar la compilación
+npm run build
+El servidor utiliza el puerto configurado en PORT o el puerto 3000 si esa variable no está definida.
+Datos iniciales de referencia
+Para utilizar las funcionalidades de Solicitudes y Suscripciones, las tablas estados_solicitud y tipos_alerta deben contener los valores que consultan los Services. En una base de datos nueva, estas inserciones se pueden ejecutar una sola vez, por ejemplo desde pgAdmin:
+INSERT INTO estados_solicitud (nombre)
+VALUES ('Pendiente'), ('Aprobada'), ('Rechazada');
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+INSERT INTO tipos_alerta (nombre)
+VALUES
+  ('Alertas prioritarias'),
+  ('Búsquedas de niños y adolescentes'),
+  ('Personas mayores'),
+  ('Desapariciones en mi zona');
+Estos registros son datos de referencia; su inserción no modifica la estructura de las tablas. Si ya existen, no se deben insertar nuevamente con estas instrucciones.
+Verificación de la API con Postman
+Para verificar la API de manera independiente del frontend se utiliza la colección Alerta Búsqueda - Backend, organizada por módulos: Personas, Users, Solicitudes y Suscripciones.
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+Durante las pruebas manuales se han ejecutado solicitudes HTTP para registrar, consultar, actualizar y eliminar usuarios y suscripciones, así como para crear y listar solicitudes de búsqueda y consultar personas desaparecidas. Entre las respuestas observadas están 201 Created, 200 OK, 400 Bad Request, 404 Not Found y 409 Conflict, según el caso.
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+Postman actúa como cliente HTTP: envía solicitudes a los Controllers de NestJS; los Services aplican la lógica y Prisma opera sobre PostgreSQL. Posteriormente, el frontend en React podrá consumir los mismos endpoints mediante Axios.
+Ejemplos de solicitudes
+Registrar usuario — POST /users
+{
+  "nombre": "Lucia",
+  "apellido": "Fernandez",
+  "correo": "lucia.ejemplo@example.com",
+  "password": "Prueba1234"
+}
+Registrar suscripción — POST /suscripciones/usuario/1
+{
+  "nombre_completo": "Lucia Fernandez",
+  "edad": 24,
+  "telefono": "3814567890",
+  "provincia": "Tucumán",
+  "alertas_prioritarias": true,
+  "menores": false,
+  "adultos_mayores": false,
+  "mi_zona": true
+}
+Registrar solicitud — POST /solicitudes/usuario/1/persona/1
+{
+  "nombre_completo": "Mariana Perez",
+  "dni": "34567890",
+  "telefono": "3814567890"
+}
+Los identificadores son ilustrativos y deben corresponder a registros existentes en la base de datos local.
+Validaciones y manejo de errores
+La API utiliza DTO y ValidationPipe para validar los datos recibidos. Los identificadores de las rutas se procesan con ParseIntPipe.
 
-To add it to this project, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
-
-```bash
-$ npx @nestjs/observe link
-```
-
-It installs `@nestjs/observe`, wires it into `AppModule` and `main.ts`, and writes the app key and secret into `.env`, which every `nest start` script (`start`, `start:dev`, `start:debug`) then loads. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
-
-Or do it by hand:
-
-```bash
-$ npm install @nestjs/observe
-```
-
-Then follow the [setup guide](https://docs.nestjs.com/observability/sdk) - it takes a single import and an app key.
-
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Los Services utilizan excepciones de NestJS para comunicar errores de validación, registros inexistentes, credenciales inválidas y conflictos, incluidos correos duplicados o relaciones que impiden una eliminación.
+Flujo de trabajo con Git
+El desarrollo se organiza con las ramas main (principal), dev (integración), feature/* (funcionalidades), fix/* (correcciones), refactor/* (reorganización) y docs/* (documentación). Los cambios se integran mediante commits descriptivos y Pull Requests. El historial del repositorio permite consultar la evolución del backend.
+Repositorios relacionados
+- Backend: https://github.com/ValentinaPereyra03/AlertaBusqueda-Backend
+- Frontend: https://github.com/IgnacioRosconi/AlertaBusqueda-frontend
+El frontend está desarrollado con React y Vite; las pruebas actuales de esta API se realizan mediante Postman como cliente HTTP independiente.

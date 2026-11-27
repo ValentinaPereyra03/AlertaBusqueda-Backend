@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  idUsuario     Int                 @id @default(autoincrement()) @map("id_usuario")
+  nombre        String              @db.VarChar(100)
+  apellido      String              @db.VarChar(100)
+  passwordHash String?              @map("password_hash") @db.VarChar(255)
+  correo        String              @unique @db.VarChar(254)
+  fechaRegistro DateTime            @default(now()) @map("fecha_registro") @db.Timestamptz(6)
+  solicitudes   SolicitudBusqueda[]
+  suscripcion   Suscripcion?
+
+  @@map("usuarios")
+}
+
+model PersonaDesaparecida {
+  idPersona            Int                @id @default(autoincrement()) @map("id_persona")
+  nombre               String             @db.VarChar(100)
+  apellido             String             @db.VarChar(100)
+  edad                 Int?               @db.SmallInt
+  provincia            String             @db.VarChar(100)
+  fechaDesaparicion    DateTime?          @map("fecha_desaparicion") @db.Date
+  lugarUltimaVez       String             @map("lugar_ultima_vez") @db.Text
+  descripcionFisica    String             @map("descripcion_fisica") @db.Text
+  informacionAdicional String?            @map("informacion_adicional") @db.Text
+  fotoUrl              String?            @map("foto_url") @db.Text
+  estadoBusqueda       String?            @map("estado_busqueda") @db.VarChar(30)
+  solicitud            SolicitudBusqueda?
+
+  @@map("personas_desaparecidas")
+}
+
+model Denunciante {
+  idDenunciante  Int                 @id @default(autoincrement()) @map("id_denunciante")
+  nombreCompleto String              @map("nombre_completo") @db.VarChar(200)
+  dni            String              @unique @db.VarChar(15)
+  telefono       String              @db.VarChar(25)
+  solicitudes    SolicitudBusqueda[]
+
+  @@map("denunciantes")
+}
+
+model EstadoSolicitud {
+  idEstado    Int                 @id @default(autoincrement()) @map("id_estado")
+  nombre      String              @unique @db.VarChar(50)
+  solicitudes SolicitudBusqueda[]
+
+  @@map("estados_solicitud")
+}
+
+model SolicitudBusqueda {
+  idSolicitud    Int                 @id @default(autoincrement()) @map("id_solicitud")
+  idUsuario      Int                 @map("id_usuario")
+  idPersona      Int                 @unique @map("id_persona")
+  idDenunciante  Int                 @map("id_denunciante")
+  idEstado       Int                 @map("id_estado")
+  fechaSolicitud DateTime            @default(now()) @map("fecha_solicitud") @db.Timestamptz(6)
+  usuario        Usuario             @relation(fields: [idUsuario], references: [idUsuario])
+  persona        PersonaDesaparecida @relation(fields: [idPersona], references: [idPersona])
+  denunciante    Denunciante         @relation(fields: [idDenunciante], references: [idDenunciante])
+  estado         EstadoSolicitud     @relation(fields: [idEstado], references: [idEstado])
+
+  @@map("solicitudes_busqueda")
+}
+
+model TipoAlerta {
+  idTipo        Int                     @id @default(autoincrement()) @map("id_tipo")
+  nombre        String                  @unique @db.VarChar(100)
+  suscripciones SuscripcionTipoAlerta[]
+
+  @@map("tipos_alerta")
+}
+
+model Suscripcion {
+  idSuscripcion    Int                     @id @default(autoincrement()) @map("id_suscripcion")
+  idUsuario        Int                     @unique @map("id_usuario")
+  edad             Int                     @db.SmallInt
+  telefono         String                  @db.VarChar(25)
+  provincia        String                  @db.VarChar(100)
+  fechaSuscripcion DateTime                @default(now()) @map("fecha_suscripcion") @db.Timestamp(6)
+  usuario          Usuario                 @relation(fields: [idUsuario], references: [idUsuario])
+  tiposAlerta      SuscripcionTipoAlerta[]
+
+  @@map("suscripciones")
+}
+
+model SuscripcionTipoAlerta {
+  idSuscripcion Int         @map("id_suscripcion")
+  idTipo        Int         @map("id_tipo")
+  suscripcion   Suscripcion @relation(fields: [idSuscripcion], references: [idSuscripcion])
+  tipoAlerta    TipoAlerta  @relation(fields: [idTipo], references: [idTipo])
+
+  @@id([idSuscripcion, idTipo])
+  @@map("suscripcion_tipos_alerta")
+}
